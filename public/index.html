@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Make Claude push back</title>
+<meta name="description" content="A free Claude skill that refuses your vague brief, asks the hard questions first, then answers like someone who gives a damn.">
+<meta name="theme-color" content="#FF6719">
+<meta name="color-scheme" content="light">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-1.5 0 24 24'><g fill='%23FF6719'><path d='M21 0H0v2.836h21V0z'/><path d='M21 5.406H0v2.836h21V5.406z'/><path d='M0 10.813V24l10.5-5.838L21 24V10.813H0z'/></g></svg>">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Make Claude push back">
+<meta property="og:description" content="A free Claude skill that asks the hard questions before it answers.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Make Claude push back">
+<meta name="twitter:description" content="A free Claude skill that asks the hard questions before it answers.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:wght@600;700&display=swap">
+
+<style>
+  /* Substack light-mode tokens, read off substack.com and a live publication */
+  :root{
+    --bg:#FFFFFF;
+    --text:#363737;
+    --muted:#757575;
+    --border:rgba(0,0,0,.1);
+    --accent:#FF6719;
+    --accent-hover:#E55A12;
+    --danger:#B42318;
+    --serif:'Lora',Georgia,'Times New Roman',serif;
+    --sans:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  }
+
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:32px 24px;
+  }
+
+  main{width:100%;max-width:520px}
+
+  /* The Substack logomark, inlined so the page makes no external requests.
+     Bare mark rather than a mark-in-a-square: that is how it sits on
+     Substack's own pages, and it needs no container to read correctly. */
+  .mark{
+    display:block;
+    height:30px;
+    width:auto;
+    fill:var(--accent);
+    margin-bottom:30px;
+  }
+
+  h1{
+    font-family:var(--serif);
+    font-weight:700;
+    font-size:clamp(32px,6.5vw,50px);
+    line-height:1.15;
+    letter-spacing:-.02em;
+    margin:0 0 14px;
+    color:var(--text);
+    text-wrap:balance;         /* keeps "font." off a line of its own */
+  }
+
+  /* Short enough to hold one line down to a 320px viewport, so no max-width
+     and no balancing -- both only matter once a line is allowed to wrap. */
+  .sub{
+    font-size:17px;
+    line-height:1.5;
+    color:var(--muted);
+    margin:0 0 28px;
+  }
+
+  /* The signature Substack subscribe bar: input and button joined into one pill */
+  form{margin:0}
+  .bar{display:flex;width:100%}
+
+  .bar input[type=email]{
+    flex:1 1 auto;
+    min-width:0;
+    height:48px;
+    padding:0 14px;
+    font-family:var(--sans);
+    font-size:16px;            /* 16px or iOS zooms the page on focus */
+    color:var(--text);
+    background:#fff;
+    border:1px solid var(--border);
+    border-right:0;
+    border-radius:8px 0 0 8px;
+    outline:none;
+    -webkit-appearance:none;
+    appearance:none;
+  }
+  .bar input[type=email]::placeholder{color:#A3A3A3}
+  .bar input[type=email]:disabled{background:#FAFAFA;color:var(--muted)}
+
+  .bar button{
+    flex:0 0 auto;
+    height:48px;
+    padding:0 22px;
+    font-family:var(--sans);
+    font-size:15px;
+    font-weight:600;
+    color:#fff;
+    background:var(--accent);
+    border:1px solid var(--accent);
+    border-radius:0 8px 8px 0;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:background .12s ease,border-color .12s ease;
+  }
+  .bar button:hover:not(:disabled){background:var(--accent-hover);border-color:var(--accent-hover)}
+  .bar button:disabled{opacity:.6;cursor:default}
+
+  /* One ring around the whole joined control, not two */
+  .bar:focus-within{
+    border-radius:8px;
+    box-shadow:0 0 0 3px rgba(255,103,25,.22);
+  }
+  .bar:focus-within input[type=email]{border-color:var(--accent)}
+
+  .fine{
+    font-size:13px;
+    line-height:1.5;
+    font-style:italic;
+    color:var(--muted);
+    margin:12px 0 0;
+  }
+
+  .error{
+    font-size:14px;
+    line-height:1.45;
+    color:var(--danger);
+    margin:12px 0 0;
+  }
+  .error:empty{display:none}
+
+  /* Honeypot: off-screen, untabbable, invisible to screen readers */
+  .hp{
+    position:absolute;
+    left:-9999px;
+    width:1px;height:1px;
+    opacity:0;
+    pointer-events:none;
+  }
+
+  /* Success replaces the form in place -- the page never navigates */
+  .done h2{
+    font-family:var(--serif);
+    font-weight:700;
+    font-size:clamp(26px,5vw,36px);
+    line-height:1.2;
+    letter-spacing:-.015em;
+    margin:0 0 12px;
+  }
+  .done p{font-size:17px;line-height:1.5;margin:0 0 10px;color:var(--text)}
+  .done .hint{font-size:13px;line-height:1.5;color:var(--muted);margin-top:16px}
+  .done .addr{font-weight:600;word-break:break-all}
+  .check{color:var(--accent)}
+
+  [hidden]{display:none !important}
+
+  @media (max-width:520px){
+    body{align-items:flex-start;padding-top:14vh}
+    .bar{flex-direction:column;gap:8px}
+    .bar input[type=email]{
+      width:100%;
+      border-right:1px solid var(--border);
+      border-radius:8px;
+    }
+    .bar button{width:100%;border-radius:8px;padding:0 16px}
+    .bar:focus-within{box-shadow:none}
+    .bar:focus-within input[type=email]{box-shadow:0 0 0 3px rgba(255,103,25,.22)}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none !important;animation:none !important}
+  }
+</style>
+</head>
+<body>
+
+<main>
+  <svg class="mark" viewBox="0 0 21 24" aria-hidden="true" focusable="false">
+    <path d="M21 0H0v2.836h21V0z"/>
+    <path d="M21 5.406H0v2.836h21V5.406z"/>
+    <path d="M0 10.813V24l10.5-5.838L21 24V10.813H0z"/>
+  </svg>
+
+  <div id="ask">
+    <h1>Make Claude push back.</h1>
+    <p class="sub">Free. Takes thirty seconds.</p>
+
+    <form id="form" novalidate>
+      <div class="bar">
+        <label for="email" class="hp">Email address</label>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          placeholder="Type your email&hellip;"
+          autocomplete="email"
+          inputmode="email"
+          spellcheck="false"
+          autocapitalize="off"
+          required
+          autofocus>
+        <input class="hp" type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <button id="submit" type="submit">Get it</button>
+      </div>
+      <p class="fine">You&rsquo;ll also join my weekly newsletter. Unsubscribe anytime.</p>
+      <p class="error" id="error" role="alert"></p>
+    </form>
+  </div>
+
+  <div class="done" id="done" hidden>
+    <h2>Check your inbox <span class="check">&#10003;</span></h2>
+    <p>Sent to <span class="addr" id="sentTo"></span>.</p>
+    <p class="hint">Nothing after a minute? Look in Promotions or Spam &mdash; and drag it to your inbox so the rest of the newsletter finds you.</p>
+  </div>
+</main>
+
+<script>
+(function () {
+  var form   = document.getElementById('form');
+  var input  = document.getElementById('email');
+  var button = document.getElementById('submit');
+  var error  = document.getElementById('error');
+  var ask    = document.getElementById('ask');
+  var done   = document.getElementById('done');
+  var sentTo = document.getElementById('sentTo');
+  var busy   = false;
+
+  function fail(msg) {
+    error.textContent = msg;
+    busy = false;
+    button.disabled = false;
+    input.disabled  = false;
+    button.textContent = 'Get it';
+    input.focus();
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (busy) return;
+
+    var email = input.value.trim();
+    error.textContent = '';
+
+    // Cheap client-side sanity check so obvious typos never hit the network
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+      fail('That email doesn’t look right — mind checking it?');
+      return;
+    }
+
+    busy = true;
+    button.disabled = true;
+    input.disabled  = true;
+    button.textContent = 'Sending…';
+
+    fetch('/api/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: email,
+        company: form.company.value,
+        referrer: document.referrer || ''
+      })
+    })
+      .then(function (r) {
+        return r.json().catch(function () { return { ok: r.ok }; });
+      })
+      .then(function (data) {
+        if (!data || !data.ok) throw new Error((data && data.error) || 'send_failed');
+        sentTo.textContent = email;
+        ask.hidden  = true;
+        done.hidden = false;
+        done.querySelector('h2').setAttribute('tabindex', '-1');
+        done.querySelector('h2').focus();
+      })
+      .catch(function () {
+        fail('Something broke on my end. Try once more?');
+      });
+  });
+})();
+</script>
+
+</body>
+</html>
+
+<!-- deploy pipeline verified -->
