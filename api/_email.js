@@ -21,20 +21,17 @@ The skill is the file attached to this email.
 3. Next time you catch yourself writing a lazy prompt, type:
      ${SLASH} make this better
 
-Here's the part people aren't ready for: it won't do it.
+Fair warning: it won't just do it.
 
-It'll tell you "make this better" isn't a request yet, then ask you five or six
-blunt questions -- who it's for, what breaks if it's wrong, what you're avoiding
-saying. Answer them and you get something with a point of view, not a glossy
-draft built on fog.
+You'll type that and it'll come back asking who it's for, what breaks if it's
+wrong, what you're not saying. Four or five of those before it writes a word.
 
-The questions are the feature. Most of the time you'll realise you didn't know
-what you wanted either.
+That's the point. Half the time I answer them and realise I didn't know what
+I wanted either.
 
-One warning: it's built to argue with you, so don't reach for it when you
-already know exactly what you want and just need it typed. Use it when you're
-stuck, or when the stakes are real enough that being told "this is weak" is
-cheaper than finding out later.
+Don't use it when you already know what you want and just need it typed. It'll
+argue with you and you'll get annoyed. Save it for when you're stuck, or when
+it actually matters if you get it wrong.
 
 Ruben
 `;
@@ -70,18 +67,17 @@ function html() {
   <p style="${step}">3. Next time you catch yourself writing a lazy prompt, type:</p>
   <p style="${step};margin:0 0 16px;padding-left:18px"><code style="${code}">${SLASH}</code> make this better</p>
 
-  <p style="${p};margin-top:20px">Here&rsquo;s the part people aren&rsquo;t ready for: <strong>it won&rsquo;t do it.</strong></p>
+  <p style="${p};margin-top:20px">Fair warning: <strong>it won&rsquo;t just do it.</strong></p>
 
-  <p style="${p}">It&rsquo;ll tell you &ldquo;make this better&rdquo; isn&rsquo;t a request yet, then ask you five or six blunt
-     questions &mdash; who it&rsquo;s for, what breaks if it&rsquo;s wrong, what you&rsquo;re avoiding saying. Answer them
-     and you get something with a point of view, not a glossy draft built on fog.</p>
+  <p style="${p}">You&rsquo;ll type that and it&rsquo;ll come back asking who it&rsquo;s for, what breaks if it&rsquo;s wrong,
+     what you&rsquo;re not saying. Four or five of those before it writes a word.</p>
 
-  <p style="${p}">The questions are the feature. Most of the time you&rsquo;ll realise you didn&rsquo;t know what you
-     wanted either.</p>
+  <p style="${p}">That&rsquo;s the point. Half the time I answer them and realise I didn&rsquo;t know what I wanted
+     either.</p>
 
-  <p style="${p}"><strong>One warning:</strong> it&rsquo;s built to argue with you, so don&rsquo;t reach for it when you
-     already know exactly what you want and just need it typed. Use it when you&rsquo;re stuck, or when the
-     stakes are real enough that being told &ldquo;this is weak&rdquo; is cheaper than finding out later.</p>
+  <p style="${p}">Don&rsquo;t use it when you already know what you want and just need it typed. It&rsquo;ll argue
+     with you and you&rsquo;ll get annoyed. Save it for when you&rsquo;re stuck, or when it actually matters if you
+     get it wrong.</p>
 
   <p style="${p};margin-top:28px">Ruben</p>
 
